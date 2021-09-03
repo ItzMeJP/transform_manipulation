@@ -10,6 +10,15 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <iostream>
+
+#define MSG_PREFIX "<TransformManipulation> "
+
+#ifndef NDEBUG
+#define DEBUG_MSG(str) do { std::cout << "\033[;33m" << MSG_PREFIX << str << "\033[0m"<< std::endl; } while( false )
+#else
+#define DEBUG_MSG(str) do { } while ( false )
+#endif
 
 class Pose{
 public:
@@ -34,21 +43,21 @@ public:
     /// <param name="_name"> Frame name. </param>
     /// <param name="_parent_frame"> Parent frame name. </param>
     /// <param name="_position"> Position </param>
-    /// <param name="_quaternion_orientation"> Orientation in Tait-Bryan (or cumulative Euler) angle (ZYX sequence). </param>
+    /// <param name="_quaternion_orientation"> Orientation in Radians in Tait-Bryan (or cumulative Euler) angle (ZYX sequence). </param>
     Pose(std::string _name,std::string _parent_frame,Eigen::Translation3d _position, Eigen::Vector3d _rpy_zyx_orientation);
 
     ~Pose();
 
     /// <summary>
-    /// Get the frame stored quaternion angle representation in Tait-Bryan (or cumulative Euler) angle (ZYX sequence).
+    /// Get the frame stored quaternion angle (in radians) representation in Tait-Bryan (or cumulative Euler) angle (ZYX sequence).
     /// </summary>
-    /// <returns> The frame position.</returns>
+    /// <returns> The frame orientation.</returns>
     Eigen::Vector3d getRPYOrientationZYXOrder();
 
     /// <summary>
     /// Get the frame stored orientation in quaternion format.
     /// </summary>
-    /// <returns> The frame orientation inf eigen quaternion format.</returns>
+    /// <returns> The frame orientation in eigen quaternion format.</returns>
     Eigen::Quaterniond getQuaternionOrientation();
 
     /// <summary>
@@ -56,6 +65,18 @@ public:
     /// </summary>
     /// <returns> The frame position.</returns>
     Eigen::Translation3d getPosition();
+
+    /// <summary>
+    /// Get the Eigen affine transformation object
+    /// </summary>
+    /// <returns> The affine object position.</returns>
+    Eigen::Affine3d getAffine();
+
+    /// <summary>
+    /// Get the pose in format of transformation matrix [R(3x3) T(3,1); {0 0 0 1}]
+    /// </summary>
+    /// <returns> The transformation matrix [R(3x3) T(3,1); {0 0 0 1}].</returns>
+    Eigen::Matrix4d getMatrix();
 
     /// <summary>
     /// Get the frame name
@@ -104,6 +125,13 @@ protected:
     Eigen::Translation3d position_;
     Eigen::Vector3d rpy_zyx_orientation_;
     Eigen::Quaterniond quaternion_orientation_;
+    Eigen::Affine3d affine_;
+    Eigen::Matrix4d transform_matrix_;
+
+    /// <summary>
+    /// Generate the transformation matrix (4x4) based on the pose/frame.
+    /// </summary>
+    void buildMatrix();
 
     /// <summary>
     /// Transform a Euler angle representation (cumulative or not) to quaternion angle representation. The construction sequence is ZYX

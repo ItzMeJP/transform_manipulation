@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(transform_manipulation
-        VERSION 10.08.2021
+        VERSION 03.09.2021
         DESCRIPTION
         "Simple serial API to C++")
 
@@ -29,7 +29,7 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME} SHARED
         src/transform_manipulation/pose.cpp
-        )
+        src/transform_manipulation/transform.cpp src/examples/transform_frames_node.cpp)
 
 ## Set dependencies of the library
 target_link_libraries(${PROJECT_NAME}
@@ -42,7 +42,7 @@ target_link_libraries(${PROJECT_NAME}
 # To export the lib and install it
 set_target_properties(${PROJECT_NAME} PROPERTIES
         VERSION ${PROJECT_VERSION}
-        PUBLIC_HEADER "include/transform_manipulation/pose.h"
+        PUBLIC_HEADER "include/transform_manipulation/pose.h;include/transform_manipulation/transform.h"
 
         )
 
@@ -73,9 +73,16 @@ endif()
 
 
 
-#add_executable(test
-#        src/examples/test.cpp)
+add_executable(transform_frames_node
+       src/examples/transform_frames_node.cpp)
 
-#target_link_libraries(test
-#        ${PROJECT_NAME}
-#        )
+target_link_libraries(transform_frames_node
+        ${PROJECT_NAME}
+        )
+
+add_executable(convert_to_matrix_node
+        src/examples/convert_to_matrix_node.cpp)
+
+target_link_libraries(convert_to_matrix_node
+        ${PROJECT_NAME}
+        )

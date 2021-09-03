@@ -13,6 +13,11 @@ Pose::Pose(){
     position_ = Eigen::Translation3d(0,0,0);
     rpy_zyx_orientation_ = Eigen::Vector3d(0,0,0);
     Eigen::Quaterniond quaternion_orientation_= Eigen::Quaterniond (1,0,0,0);
+
+    affine_ = position_*quaternion_orientation_;
+    buildMatrix();
+
+
 };
 
 Pose::Pose(std::string _name, std::string _parent_frame, Eigen::Translation3d _position,
@@ -24,6 +29,10 @@ Pose::Pose(std::string _name, std::string _parent_frame, Eigen::Translation3d _p
     //rpy_zyx_orientation_ = quaternion_orientation_.matrix().eulerAngles(2,0,2); //ZYZ
     rpy_zyx_orientation_ = getTaitBryanZYXFromQuaternion(quaternion_orientation_);
 
+    affine_ = position_*quaternion_orientation_;
+
+    buildMatrix();
+
 }
 
 Pose::Pose(std::string _name, std::string _parent_frame, Eigen::Translation3d _position,
@@ -33,6 +42,11 @@ Pose::Pose(std::string _name, std::string _parent_frame, Eigen::Translation3d _p
     position_ = _position;
     rpy_zyx_orientation_ = _rpy_zyx_orientation;
     quaternion_orientation_ = getQuaternionFromZYXEuler(rpy_zyx_orientation_);
+
+    affine_ = position_*quaternion_orientation_;
+
+    buildMatrix();
+
 
 }
 
@@ -50,6 +64,10 @@ Eigen::Translation3d Pose::getPosition(){
     return position_;
 }
 
+Eigen::Affine3d Pose::getAffine(){
+    return affine_;
+}
+
 
 std::string Pose::getName(){
     return name_;
@@ -62,13 +80,19 @@ std::string Pose::getParentName(){
 void Pose::setRPYOrientationZYXOrder(Eigen::Vector3d _in){
     rpy_zyx_orientation_ = _in;
     quaternion_orientation_ = getQuaternionFromZYXEuler(rpy_zyx_orientation_);
+    affine_ = position_*quaternion_orientation_;
+    buildMatrix();
 }
 void Pose::setQuaternionOrientation(Eigen::Quaterniond _in){
     quaternion_orientation_ = _in;
     rpy_zyx_orientation_ = getTaitBryanZYXFromQuaternion(quaternion_orientation_);
+    affine_ = position_*quaternion_orientation_;
+    buildMatrix();
 }
 void Pose::setPosition(Eigen::Translation3d _in){
     position_ = _in;
+    affine_ = position_*quaternion_orientation_;
+    buildMatrix();
 }
 void Pose::setName(std::string _in){
     name_ = _in;
@@ -76,6 +100,19 @@ void Pose::setName(std::string _in){
 }
 void Pose::setParentName(std::string _in){
     parent_frame_ = _in;
+}
+
+Eigen::Matrix4d Pose::getMatrix(){
+    return transform_matrix_;
+}
+
+void Pose::buildMatrix() {
+    Eigen::Matrix3d r = affine_.rotation();
+    Eigen::Vector3d t = affine_.translation();
+    transform_matrix_.setIdentity();
+    transform_matrix_.block<3,3>(0,0) = r;
+    transform_matrix_.block<3,1>(0,3) = t;
+
 }
 
 /// <summary>
