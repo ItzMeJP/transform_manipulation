@@ -5,8 +5,8 @@
  * @author João Pedro Carvalho de Souza
  */
 
-#ifndef MIMIC_GRASPING_SERVER_POSE_H
-#define MIMIC_GRASPING_SERVER_POSE_H
+#ifndef TRANSFORM_MANIPULATION_POSE_H
+#define TRANSFORM_MANIPULATION_POSE_H
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -79,6 +79,18 @@ public:
     Eigen::Matrix4d getMatrix();
 
     /// <summary>
+    /// Get the rotation matrix
+    /// </summary>
+    /// <returns> The 3x3 rotation matrix.</returns>
+    Eigen::Matrix3d getRotationMatrix();
+
+    /// <summary>
+    /// Get the translation vector
+    /// </summary>
+    /// <returns> The 3x1 translation vector.</returns>
+    Eigen::Vector3d getTranslationVector();
+
+    /// <summary>
     /// Get the frame name
     /// </summary>
     /// <returns> The frame name.</returns>
@@ -120,6 +132,46 @@ public:
     /// <param name="_in"> Frame parent name.</param>
     void setParentName(std::string _in);
 
+
+    // ********** Static methods definitions ********** //
+
+
+    /// <summary>
+    /// Transform a Euler angle representation (cumulative or not) to quaternion angle representation. The construction sequence is ZYX
+    /// </summary>
+    /// <param name="_v"> the Vector3 with Roll(x), Pitch(y) and Yaw(z) angles.</param>
+    /// <returns> The quaternion representation angles in eigen vector 3d format.</returns>
+    static Eigen::Quaterniond getQuaternionFromZYXEuler(Eigen::Vector3d _v);
+
+    /// <summary>
+    /// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
+    /// </summary>
+    /// <param name="_q"> Quaternion.</param>
+    /// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles.</returns>
+    static Eigen::Vector3d getTaitBryanZYXFromQuaternion(Eigen::Quaterniond _q);
+
+    /// <summary>
+    /// Transform a polar rotation (Azimuth and Polar angles) into a Rotation Matrix
+    /// </summary>
+    /// <param name="_azimuth_angle"> Azimuth angle in radians (equatorial plane).</param>
+    /// <param name="_polar_angle"> Polar angle in radians (meridian plane).</param>
+    /// <returns> The rotation 3x3 matrix</returns>
+    static Eigen::Matrix3d getRotationMatrixFromPolarCoordinate(double _azimuth_angle, double _polar_angle);
+
+    /// <summary>
+    /// Transform a rotation matrix into quaternion.
+    /// </summary>
+    /// <param name="_m"> Rotation matrix.</param>
+    /// <returns> The Quaternion type with w,x,y,z coefs.</returns>
+    static Eigen::Quaterniond getQuaternionFromRotMatrix(Eigen::Matrix3d _m);
+
+    /// <summary>
+    /// Signal function.
+    /// </summary>
+    /// <param name="_in"> Input value.</param>
+    /// <returns> -1 if _in < 0 , +1 if _in > 0 and 0 if _in = 0</returns>
+    static double sgnd(double _in);
+
 protected:
     std::string name_, parent_frame_;
     Eigen::Translation3d position_;
@@ -127,34 +179,15 @@ protected:
     Eigen::Quaterniond quaternion_orientation_;
     Eigen::Affine3d affine_;
     Eigen::Matrix4d transform_matrix_;
+    Eigen::Matrix3d rotation_matrix_;
+    Eigen::Vector3d translation_vector_;
 
     /// <summary>
     /// Generate the transformation matrix (4x4) based on the pose/frame.
     /// </summary>
     void buildMatrix();
 
-    /// <summary>
-    /// Transform a Euler angle representation (cumulative or not) to quaternion angle representation. The construction sequence is ZYX
-    /// </summary>
-    /// <param name="_v"> the Vector3 with Roll(x), Pitch(y) and Yaw(z) angles.</param>
-    /// <returns> The quaternion representation angles in eigen vector 3d format.</returns>
-    Eigen::Quaterniond getQuaternionFromZYXEuler(Eigen::Vector3d _v);
-
-    /// <summary>
-    /// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
-    /// </summary>
-    /// <param name="_q"> Quaternion.</param>
-    /// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles.</returns>
-    Eigen::Vector3d getTaitBryanZYXFromQuaternion(Eigen::Quaterniond _q);
-
-    /// <summary>
-    /// Signal function.
-    /// </summary>
-    /// <param name="_in"> Input value.</param>
-    /// <returns> -1 if _in < 0 , +1 if _in > 0 and 0 if _in = 0</returns>
-    double sgnd(double _in);
-
 
 };
 
-#endif //MIMIC_GRASPING_SERVER_POSE_H
+#endif //TRANSFORM_MANIPULATION_POSE_H

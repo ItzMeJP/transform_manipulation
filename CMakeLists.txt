@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(transform_manipulation
-        VERSION 03.09.2021
+        VERSION 31.05.2022
         DESCRIPTION
         "Simple serial API to C++")
 
@@ -11,7 +11,7 @@ project(transform_manipulation
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
-set (INSTALL_SIMPLE_NETWORK_IN_ROOT Yes)
+set (INSTALL_IN_ROOT Yes)
 
 
 #External packages
@@ -51,7 +51,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE .)
 configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
 
 
-if(${INSTALL_SIMPLE_NETWORK_IN_ROOT})
+if(${INSTALL_IN_ROOT})
     MESSAGE(">>>>> The transform_manipulation is set to be installed in root. Use sudo to install." )
     install(TARGETS ${PROJECT_NAME}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}

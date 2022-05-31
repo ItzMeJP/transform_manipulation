@@ -31,6 +31,6 @@ After the installation the shared libs will be located at ```/usr/local/lib/tran
 
 ## <a name="TODO"></a>5. TODO
 - Homogeneous transform interface.
-
+- Include the Spherical Representation of GraspSynthesis Package (obj_angle_twin)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.

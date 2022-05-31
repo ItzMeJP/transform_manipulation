@@ -5,7 +5,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: @TransformManipulation@
 Description: @Homogeneous transform manipulation C++ API@
-Version: @10_08_2021@
+Version: @31_05_2022@
 
 Requires:
 Libs: -L${libdir} -ltransform_manipulation

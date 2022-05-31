@@ -1,7 +1,7 @@
 /**\file
  * \brief
  * Pose class definition.
- * @version 02.07.2021
+ * @version 31.05.2022
  * @author João Pedro Carvalho de Souza
  */
 
@@ -106,12 +106,29 @@ Eigen::Matrix4d Pose::getMatrix(){
     return transform_matrix_;
 }
 
+/// <summary>
+/// Get the translation vector
+/// </summary>
+/// <returns> The 3x1 translation vector.</returns>
+Eigen::Matrix3d Pose::getRotationMatrix(){
+    return rotation_matrix_;
+}
+
+/// <summary>
+/// Get the translation vector
+/// </summary>
+/// <returns> The 3x1 translation vector.</returns>
+Eigen::Vector3d Pose::getTranslationVector(){
+    return translation_vector_;
+}
+
+
 void Pose::buildMatrix() {
-    Eigen::Matrix3d r = affine_.rotation();
-    Eigen::Vector3d t = affine_.translation();
+    rotation_matrix_= affine_.rotation();
+    translation_vector_ = affine_.translation();
     transform_matrix_.setIdentity();
-    transform_matrix_.block<3,3>(0,0) = r;
-    transform_matrix_.block<3,1>(0,3) = t;
+    transform_matrix_.block<3,3>(0,0) = rotation_matrix_;
+    transform_matrix_.block<3,1>(0,3) = translation_vector_;
 
 }
 
@@ -122,11 +139,37 @@ void Pose::buildMatrix() {
 /// <returns> The quaternion representation angles.</returns>
 Eigen::Quaterniond Pose::getQuaternionFromZYXEuler(Eigen::Vector3d _v){
     Eigen::Quaterniond output;
-    output = Eigen::AngleAxisd(rpy_zyx_orientation_.z(), Eigen::Vector3d::UnitZ())
-                          * Eigen::AngleAxisd(rpy_zyx_orientation_.y(), Eigen::Vector3d::UnitY())
-                          * Eigen::AngleAxisd(rpy_zyx_orientation_.x(), Eigen::Vector3d::UnitX());
+    output = Eigen::AngleAxisd(_v.z(), Eigen::Vector3d::UnitZ())
+                          * Eigen::AngleAxisd(_v.y(), Eigen::Vector3d::UnitY())
+                          * Eigen::AngleAxisd(_v.x(), Eigen::Vector3d::UnitX());
     return output;
 }
+
+/// <summary>
+/// Transform a rotation matrix into quaternion.
+/// </summary>
+/// <param name="_m"> Rotation matrix.</param>
+/// <returns> The Quaternion type with w,x,y,z coefs.</returns>
+Eigen::Quaterniond Pose::getQuaternionFromRotMatrix(Eigen::Matrix3d _m){
+    Eigen::Quaterniond q(_m);
+    return q;
+}
+
+/// <summary>
+/// Transform a polar rotation (Azimuth and Polar angles) into a Rotation Matrix
+/// </summary>
+/// <param name="_azimuth_angle"> Azimuth angle in radians (equatorial plane).</param>
+/// <param name="_polar_angle"> Polar angle in radians (meridian plane).</param>
+/// <returns> The rotation 3x3 matrix</returns>
+Eigen::Matrix3d Pose::getRotationMatrixFromPolarCoordinate(double _azimuth_angle, double _polar_angle){
+
+    Eigen::Matrix3d r;
+    r << cos(_azimuth_angle),      sin(_azimuth_angle)*cos(_polar_angle),      sin(_azimuth_angle)* sin(_polar_angle),
+        -sin(_azimuth_angle),      cos(_azimuth_angle)* cos(_polar_angle),     cos(_azimuth_angle)* sin(_polar_angle),
+                 0,                  -sin(_polar_angle),                             cos(_polar_angle);
+    return r;
+}
+
 
 /// <summary>
 /// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
