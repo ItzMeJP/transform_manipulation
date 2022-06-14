@@ -11,6 +11,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <iostream>
+#include <math.h>
 
 #define MSG_PREFIX "<TransformManipulation> "
 
@@ -151,6 +152,13 @@ public:
     static Eigen::Vector3d getTaitBryanZYXFromQuaternion(Eigen::Quaterniond _q);
 
     /// <summary>
+    /// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
+    /// </summary>
+    /// <param name="_q"> Quaternion.</param>
+    /// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles in degrees.</returns>
+    static Eigen::Vector3d getTaitBryanZYXFromQuaternionInDegrees(Eigen::Quaterniond _q);
+
+    /// <summary>
     /// Transform a polar rotation (Azimuth and Polar angles) into a Rotation Matrix
     /// </summary>
     /// <param name="_azimuth_angle"> Azimuth angle in radians (equatorial plane).</param>
@@ -171,6 +179,13 @@ public:
     /// <param name="_in"> Input value.</param>
     /// <returns> -1 if _in < 0 , +1 if _in > 0 and 0 if _in = 0</returns>
     static double sgnd(double _in);
+
+    /// <summary>
+    /// Convert radians to degree.
+    /// </summary>
+    /// <param name="_radians"> Angle in radians</param>
+    /// <returns> the angles in degree </returns>
+    static double convertRadToDeg(double _radians);
 
 protected:
     std::string name_, parent_frame_;

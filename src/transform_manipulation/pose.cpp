@@ -175,7 +175,7 @@ Eigen::Matrix3d Pose::getRotationMatrixFromPolarCoordinate(double _azimuth_angle
 /// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
 /// </summary>
 /// <param name="_q"> Quaternion.</param>
-/// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles.</returns>
+/// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles in radians.</returns>
 Eigen::Vector3d Pose::getTaitBryanZYXFromQuaternion(Eigen::Quaterniond _q) {
     //https://marc-b-reynolds.github.io/math/2017/04/18/TaitEuler.html
 
@@ -205,8 +205,27 @@ Eigen::Vector3d Pose::getTaitBryanZYXFromQuaternion(Eigen::Quaterniond _q) {
     return output;
 }
 
+/// <summary>
+/// Transform a quaternion angle representation to Tait-Bryan (or cumulative Euler) angle. The construction sequence is ZYX
+/// </summary>
+/// <param name="_q"> Quaternion.</param>
+/// <returns> The Vector3 with Roll(x), Pitch(y) and Yaw(z) angles in degrees.</returns>
+Eigen::Vector3d Pose::getTaitBryanZYXFromQuaternionInDegrees(Eigen::Quaterniond _q){
+
+    Eigen::Vector3d  radians_arr, deg_arr;
+    radians_arr = getTaitBryanZYXFromQuaternion(_q);
+    deg_arr <<  Pose::convertRadToDeg(radians_arr[0]) , Pose::convertRadToDeg(radians_arr[1]), Pose::convertRadToDeg(radians_arr[2]);
+    return deg_arr;
+
+}
+
 double Pose::sgnd(double _in) {
     return (_in > 0.0) ? 1.0 : ((_in < 0.0) ? -1.0 : 0.0);
+}
+
+double Pose::convertRadToDeg(double _radians)
+{
+    return _radians * (180.0 / M_PI);
 }
 
 

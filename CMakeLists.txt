@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(transform_manipulation
-        VERSION 31.05.2022
+        VERSION 08.06.2022
         DESCRIPTION
         "Simple serial API to C++")
 
@@ -43,8 +43,8 @@ target_link_libraries(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES
         VERSION ${PROJECT_VERSION}
         PUBLIC_HEADER "include/transform_manipulation/pose.h;include/transform_manipulation/transform.h"
-
         )
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 
@@ -56,7 +56,8 @@ if(${INSTALL_IN_ROOT})
     install(TARGETS ${PROJECT_NAME}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-            PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+            PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+            )
 
     install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
@@ -67,14 +68,15 @@ else()
             LIBRARY DESTINATION ${CMAKE_BINARY_DIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_BINARY_DIR}/public_headers)
 
-    install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc
+
+install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc
             DESTINATION ${CMAKE_BINARY_DIR}/pkgconfig)
 endif()
 
 
 
 add_executable(transform_frames_node
-       src/examples/transform_frames_node.cpp)
+        src/examples/transform_frames_node.cpp)
 
 target_link_libraries(transform_frames_node
         ${PROJECT_NAME}
@@ -86,3 +88,27 @@ add_executable(convert_to_matrix_node
 target_link_libraries(convert_to_matrix_node
         ${PROJECT_NAME}
         )
+
+add_executable(get_rpy_node
+        src/examples/get_rpy_node.cpp)
+
+target_link_libraries(get_rpy_node
+        ${PROJECT_NAME}
+        )
+
+# To export the bin and install it
+set_target_properties(get_rpy_node PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        )
+
+if(${INSTALL_IN_ROOT})
+    MESSAGE(">>>>> The transform_manipulation nodes are set to be installed in root. Use sudo to install." )
+
+    install(TARGETS get_rpy_node
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME})
+
+else()
+    MESSAGE(">>>>> The transform_manipulation nodes are set to be installed locally." )
+    install(TARGETS get_rpy_node
+            RUNTIME DESTINATION ${CMAKE_BINARY_BINDIR}/${PROJECT_NAME})
+endif()
